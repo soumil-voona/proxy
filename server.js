@@ -1,4 +1,5 @@
 import http from "node:http";
+import https from "node:https";
 import { URL } from "node:url";
 
 const port = Number.parseInt(process.env.PORT ?? "3000", 10);
@@ -33,7 +34,8 @@ const server = http.createServer((request, response) => {
   const headers = { ...request.headers, host: targetUrl.host, "x-forwarded-host": request.headers.host ?? "" };
   delete headers.connection;
 
-  const upstreamRequest = http.request(
+  const requestClient = targetUrl.protocol === "https:" ? https : http;
+  const upstreamRequest = requestClient.request(
     {
       protocol: targetUrl.protocol,
       hostname: targetUrl.hostname,
